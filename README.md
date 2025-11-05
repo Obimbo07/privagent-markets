@@ -371,19 +371,19 @@ cast send $MARKET_ADR \
 
 #### Step 14: (Optional) Simulate the Workflow
 
+**Note:** This will:
+- Run CRE locally in simulation mode
+- Make a real HTTP request to Gemini
+- Make a real HTTP POST request to Firebase
+- **NOT** write results on-chain (no `--broadcast` flag)
+
 Run CRE in simulation mode to test the workflow:
 
 ```bash
 cre workflow simulate prediction-market-demo --target local-simulation
 ```
 
-When prompted, enter the txn hash from step 14 and enter the log index of `0`.
-
-**Note:** This will:
-- Run CRE locally in simulation mode
-- Make a real HTTP request to Gemini
-- Make a real HTTP POST request to Firebase
-- **NOT** write results on-chain (no `--broadcast` flag)
+When prompted, enter the txn hash from step 13 and enter the log index of `0`.
 
 
 
@@ -395,7 +395,7 @@ Execute the workflow and write results on-chain:
 cre workflow simulate prediction-market-demo --target local-simulation --broadcast
 ```
 
-When prompted, enter the txn hash from step 14 and enter the log index of `0`.
+When prompted, enter the txn hash from step 13 and enter the log index of `0`.
 
 #### Step 15.5: (Conditional, see warning) Manual market settlement
 
