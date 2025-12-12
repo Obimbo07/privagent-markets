@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { IReceiverTemplate } from "./interfaces/IReceiverTemplate.sol";
+import { ReceiverTemplate } from "./interfaces/ReceiverTemplate.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /// @title SimpleMarket
 /// @notice A basic binary prediction market allowing users to stake ERC-20 tokens on Yes/No outcomes.
-/// @dev Integrates with Chainlink Runtime Environment (CRE) through IReceiverTemplate. Used in pair with demo workflow to settle markets with Gemini.
-contract SimpleMarket is IReceiverTemplate {
+/// @dev Integrates with Chainlink Runtime Environment (CRE) through ReceiverTemplate. Used in pair with demo workflow to settle markets with Gemini.
+contract SimpleMarket is ReceiverTemplate {
     using SafeERC20 for IERC20;
 
     // ===========================
@@ -111,7 +111,7 @@ contract SimpleMarket is IReceiverTemplate {
     // ===========================
 
     /// @param token The address of the ERC-20 token used for market participation.
-    constructor(address token) IReceiverTemplate(address(0), bytes10("dummy")) {
+    constructor(address token) ReceiverTemplate() {
         paymentToken = IERC20(token);
     }
 
@@ -202,13 +202,6 @@ contract SimpleMarket is IReceiverTemplate {
         (uint256 marketId, uint8 outcome, uint16 confidenceBps, string memory responseId) =
             abi.decode(report, (uint256, uint8, uint16, string));
         settleMarket(marketId, Outcome(outcome), confidenceBps, responseId);
-    }
-
-    /// @notice External entry point for oracle reports; forwards to _processReport().
-    /// @dev Skips the validation logic in the base template. Required due to CRE alpha.
-    /// @param report The ABI-encoded oracle report data.
-    function onReport(bytes calldata, bytes calldata report) external override {
-        _processReport(report);
     }
 
     /// @notice Returns the evidence URI for a given market.

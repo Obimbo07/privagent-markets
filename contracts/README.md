@@ -62,7 +62,7 @@ Located at `src/SimpleMarket.sol`, this contract implements a minimal binary pre
 
 ### Architecture
 
-The contract inherits from `IReceiverTemplate`, which provides the interface for receiving signed settlement reports from CRE workflows.
+The contract inherits from `ReceiverTemplate`, which provides the interface for receiving signed settlement reports from CRE workflows.
 
 **Key Components:**
 
@@ -110,6 +110,26 @@ stateDiagram-v2
 - **Confidence Tracking**: Stores AI confidence scores (0-10000 basis points)
 - **Evidence URI**: Records Gemini response IDs for auditing
 - **Manual Override**: Allows operator intervention for inconclusive results
+- **Access Control**: Owner-managed forwarder address and workflow validation
+
+### Access Control & Security
+
+The contract implements multiple layers of access control:
+
+1. **Forwarder Restriction**: Only the configured `s_forwarderAddress` can call `onReport()` to settle markets
+2. **Owner Controls**: The contract owner (deployer) can update:
+   - `s_expectedAuthor`: Expected workflow owner author for validation
+   - `s_expectedWorkflowName`: Expected workflow name for validation
+   - `s_expectedWorkflowId` : Expected workflow ID for validation 
+   - `s_forwardedAddress` : Expected forwarded address for validation
+3. **Manual Override**: The owner can manually settle inconclusive markets using `settleMarketManually()`
+
+**Access Control Functions (inherited from ReceiverTemplate):**
+- `setExpectedAuthor(address)` - Update expected workflow author
+- `setExpectedWorkflowName(string)` - Update expected workflow name
+- `setExpectedWorkflowId(bytes32)` - Update expected workflow ID
+- `setForwarderAddress(address)` - Update CRE forwarder address
+- `transferOwnership(address)` - Transfer contract ownership (from OpenZeppelin Ownable)
 
 ## Testing
 
@@ -216,11 +236,13 @@ Inside of the new `.env` file, set the following values.
 
 You will populate the remaining `.env` variables in the following steps.
 
+**Note:** The CRE forwarder address can be set by calling the `setForwarderAddress` function with  the address `0x15fC6ae953E024d975e77382eEeC56A9101f9F88` for Sepolia testnet.
+
 ### Script Execution
 
 #### 1. Deploy SimpleMarket
 
-Deploys a new instance of the SimpleMarket contract.
+Deploys a new instance of the SimpleMarket contract with the payment token.
 
 ```bash
 #Load .env values
@@ -326,6 +348,8 @@ forge script script/SettleMarketManually.s.sol \
 ## Interacting with Deployed Contracts
 
 You can interact with deployed contracts using `cast`:
+
+### Query Market Data
 
 ```bash
 # Get market details
