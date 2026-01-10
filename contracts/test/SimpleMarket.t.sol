@@ -29,6 +29,8 @@ contract SimpleMarketTest is Test {
     address internal alice = makeAddr("alice");
     address internal bob = makeAddr("bob");
     address internal carol = makeAddr("carol");
+    //CRE Sepolia Simulation Forwarder
+    //https://docs.chain.link/cre/guides/workflow/using-evm-client/supported-networks-ts
     address internal forwarderAddress = address(0x15fC6ae953E024d975e77382eEeC56A9101f9F88);
 
     // Mock USDC uses 6 decimals to match the real token
@@ -46,8 +48,7 @@ contract SimpleMarketTest is Test {
     function setUp() public {
         // Deploy a mock ERC20 and the SimpleMarket contract
         token = new MockUSDC(1_000_000 * 1e6);
-        market = new SimpleMarket(address(token));
-        market.setForwarderAddress(forwarderAddress);
+        market = new SimpleMarket(address(token), address(forwarderAddress));
 
         // Fund each participant with 1,000 tokens
         token.transfer(alice, 1_000 * ONE_USDC);

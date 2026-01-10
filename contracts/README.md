@@ -116,19 +116,19 @@ stateDiagram-v2
 
 The contract implements multiple layers of access control:
 
-1. **Forwarder Restriction**: Only the configured `s_forwarderAddress` can call `onReport()` to settle markets
+1. **Forwarder Restriction**: Only the configured `s_forwarderAddress` (set in constructor) can call `onReport()` to settle markets
 2. **Owner Controls**: The contract owner (deployer) can update:
    - `s_expectedAuthor`: Expected workflow owner author for validation
    - `s_expectedWorkflowName`: Expected workflow name for validation
    - `s_expectedWorkflowId` : Expected workflow ID for validation 
-   - `s_forwardedAddress` : Expected forwarded address for validation
+   - `s_forwarderAddress` : CRE forwarder address (can be updated after deployment)
 3. **Manual Override**: The owner can manually settle inconclusive markets using `settleMarketManually()`
 
 **Access Control Functions (inherited from ReceiverTemplate):**
 - `setExpectedAuthor(address)` - Update expected workflow author
 - `setExpectedWorkflowName(string)` - Update expected workflow name
 - `setExpectedWorkflowId(bytes32)` - Update expected workflow ID
-- `setForwarderAddress(address)` - Update CRE forwarder address
+- `setForwarderAddress(address)` - Update CRE forwarder address (initially set in constructor)
 - `transferOwnership(address)` - Transfer contract ownership (from OpenZeppelin Ownable)
 
 ## Testing
@@ -236,7 +236,7 @@ Inside of the new `.env` file, set the following values.
 
 You will populate the remaining `.env` variables in the following steps.
 
-**Note:** The CRE forwarder address can be set by calling the `setForwarderAddress` function with  the address `0x15fC6ae953E024d975e77382eEeC56A9101f9F88` for Sepolia testnet.
+**Note:** The CRE forwarder address is set in the constructor during deployment. The address `0xF8344CFd5c43616a4366C34E3EEE75af79a74482` is used for ETH Sepolia testnet. It can be updated later using `setForwarderAddress()` if needed.
 
 ### Script Execution
 

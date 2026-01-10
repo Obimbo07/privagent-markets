@@ -111,7 +111,8 @@ contract SimpleMarket is ReceiverTemplate {
     // ===========================
 
     /// @param token The address of the ERC-20 token used for market participation.
-    constructor(address token) ReceiverTemplate() {
+    /// @param forwarderAddress The address of the CRE forwarder contract that will call onReport().
+    constructor(address token, address forwarderAddress) ReceiverTemplate(forwarderAddress) {
         paymentToken = IERC20(token);
     }
 
