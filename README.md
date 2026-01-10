@@ -215,14 +215,14 @@ export RPC_URL=...
 
 #### Step 4: Deploy a New SimpleMarket
 
-The provided constructor arguments are: (1) the payment token address (USDC on ETH Sepolia) and (2) the CRE forwarder address (ETH Sepolia CRE Forwarder).
+The provided constructor arguments are: (1) the payment token address (USDC on ETH Sepolia) and (2) the CRE forwarder address (ETH Sepolia CRE Simulation Forwarder).
 
 ```bash
 forge create src/SimpleMarket.sol:SimpleMarket \
   --broadcast \
   --rpc-url $RPC_URL \
   --private-key $PRIVATE_KEY \
-  --constructor-args 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 0xF8344CFd5c43616a4366C34E3EEE75af79a74482
+  --constructor-args 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 0x15fC6ae953E024d975e77382eEeC56A9101f9F88
 ```
 
 Note down the new contract address and export it:

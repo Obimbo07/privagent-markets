@@ -11,7 +11,7 @@ import {SimpleMarket} from "../src/SimpleMarket.sol";
 contract DeploySimpleMarket is Script {
     function run() external returns (SimpleMarket market) {
         address token = vm.envAddress("PAYMENT_TOKEN");
-        address forwarder = address(0xF8344CFd5c43616a4366C34E3EEE75af79a74482); // ETH Sepolia CRE Forwarder
+        address forwarder = address(0x15fC6ae953E024d975e77382eEeC56A9101f9F88); // ETH Sepolia CRE Simulation Forwarder
         uint256 pk = vm.envUint("PRIVATE_KEY"); // deployer EOA
 
         vm.startBroadcast(pk);
