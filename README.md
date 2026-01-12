@@ -215,14 +215,14 @@ export RPC_URL=...
 
 #### Step 4: Deploy a New SimpleMarket
 
-The provided constructor argument for payment token is USDC on ETH Sepolia.
+The provided constructor arguments are: (1) the payment token address (USDC on ETH Sepolia) and (2) the CRE forwarder address ([ETH Sepolia CRE Simulation Forwarder](https://docs.chain.link/cre/guides/workflow/using-evm-client/supported-networks-ts#understanding-forwarder-addresses)).
 
 ```bash
 forge create src/SimpleMarket.sol:SimpleMarket \
   --broadcast \
   --rpc-url $RPC_URL \
   --private-key $PRIVATE_KEY \
-  --constructor-args 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238
+  --constructor-args 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 0x15fC6ae953E024d975e77382eEeC56A9101f9F88
 ```
 
 Note down the new contract address and export it:
@@ -230,6 +230,9 @@ Note down the new contract address and export it:
 ```bash
 export MARKET_ADDRESS=...
 ```
+
+> [!WARNING]
+> The provided [`ReceiverTemplate.sol`](./contracts/src/interfaces/ReceiverTemplate.sol) includes setter functions to enable access control of the `onReport` function which are not used in this end to end test. See [the CRE docs](https://docs.chain.link/cre/guides/workflow/using-evm-client/onchain-write/building-consumer-contracts#34-configuring-permissions) for best practices.
 
 
 
