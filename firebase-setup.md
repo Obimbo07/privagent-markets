@@ -132,7 +132,7 @@ Replace:
 - `YOUR_ID_TOKEN` with your token from the previous step
 
 ```bash
-curl -X POST   'https://firestore.googleapis.com/v1/projects/YOUR_PROJECT_ID/databases/(default)/documents/my-collection'   -H 'Authorization: Bearer YOUR_ID_TOKEN'   -H 'Content-Type: application/json'   -d '{
+curl -X POST   'https://firestore.googleapis.com/v1/projects/YOUR_PROJECT_ID/databases/(default)/documents/demo'   -H 'Authorization: Bearer YOUR_ID_TOKEN'   -H 'Content-Type: application/json'   -d '{
         "fields": {
           "sample": { "stringValue": "123" }
         }
