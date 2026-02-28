@@ -5,7 +5,12 @@ libs = ["lib"]
 remappings = [
     "@openzeppelin/=lib/openzeppelin-contracts/"
 ]
-[rpc_endpoints]
-sepolia = "${SEPOLIA_RPC_URL}"
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[rpc_endpoints]
+# Standard Sepolia RPC (non-Tenderly flow)
+sepolia = "${RPC_URL}"
+# Tenderly Virtual TestNet RPC (custom chain IDs, e.g. 2714)
+tenderly = "${TENDERLY_VIRTUAL_TESTNET_RPC_URL}"
+
+# Keep this base config verification-agnostic so forge scripts can broadcast
+# on custom chain IDs without parsing custom verifier chain config.
