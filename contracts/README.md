@@ -222,21 +222,40 @@ The `script/` directory contains Forge scripts for additional execution options.
 
 ### Script Setup
 
-Create a `.env` file in the `contracts/` directory:
+Create a local env file in the `contracts/` directory:
 
 ```bash
-cp .env.example .env
-source .env
+cp .env.example .env.local
+# Export vars from .env.local into the environment for forge vm.env* calls
+set -a
+source .env.local
+set +a
 ```
 
-Inside of the new `.env` file, set the following values.
+Set the following values before running scripts:
 
-- ETH private key
-- ETH Sepolia RPC URL
+- `PRIVATE_KEY`
+- `RPC_URL` (standard Sepolia RPC, non-Tenderly flow)
+- `TENDERLY_VIRTUAL_TESTNET_RPC_URL` (Tenderly Virtual TestNet RPC)
+- `TENDERLY_VERIFIER_URL` (`${TENDERLY_VIRTUAL_TESTNET_RPC_URL}/verify`)
+- `TENDERLY_CHAIN_ID` (use RPC-reported chain ID, currently `2714`)
+- `TENDERLY_ACCESS_KEY`
 
-You will populate the remaining `.env` variables in the following steps.
+`TENDERLY_RPC` is still supported as a backward-compatible alias of `TENDERLY_VIRTUAL_TESTNET_RPC_URL`.
 
 **Note:** The CRE forwarder address is set in the constructor during deployment. The address `0xF8344CFd5c43616a4366C34E3EEE75af79a74482` is used for ETH Sepolia testnet. It can be updated later using `setForwarderAddress()` if needed.
+
+### Quick Diagnostics
+
+```bash
+# Confirm toolchain
+forge --version
+cast --version
+
+# Confirm your Tenderly Virtual TestNet chain ID
+cast chain-id --rpc-url "$TENDERLY_VIRTUAL_TESTNET_RPC_URL"
+echo "$TENDERLY_CHAIN_ID"
+```
 
 ### Script Execution
 
@@ -245,18 +264,61 @@ You will populate the remaining `.env` variables in the following steps.
 Deploys a new instance of the SimpleMarket contract with the payment token.
 
 ```bash
-#Load .env values
-source .env
+# Load env values
+set -a
+source .env.local
+set +a
 
-#Deploy SimpleMarket
+# Deploy SimpleMarket (broadcast only; no verification)
 forge script script/1_DeploySimpleMarket.s.sol \
   --rpc-url $RPC_URL \
   --broadcast \
+  --slow \
+  -vvvv
+```
+
+**Output**: Note the contract address and set it as `MARKET` in your `.env.local`.
+
+#### Tenderly Virtual TestNet Verification Modes
+
+Use either mode below when deploying/verifying on Tenderly custom chain IDs.
+
+**Primary mode (CLI custom verifier):**
+
+```bash
+forge script script/1_DeploySimpleMarket.s.sol \
+  --rpc-url $TENDERLY_VIRTUAL_TESTNET_RPC_URL \
+  --broadcast \
+  --slow \
+  --verify \
+  --verifier custom \
+  --verifier-url $TENDERLY_VERIFIER_URL \
+  -vvvv
+```
+
+**Secondary mode (config-driven verifier):**
+
+```bash
+forge script script/1_DeploySimpleMarket.s.sol \
+  --config-path foundry.tenderly.toml \
+  --rpc-url $TENDERLY_VIRTUAL_TESTNET_RPC_URL \
+  --broadcast \
+  --slow \
   --verify \
   -vvvv
 ```
 
-**Output**: Note the contract address and set it as `MARKET` in your `.env`.
+**Broadcast-only fallback (always verification-agnostic):**
+
+```bash
+forge script script/2_CreateNewMarket.s.sol \
+  --rpc-url $TENDERLY_VIRTUAL_TESTNET_RPC_URL \
+  --broadcast \
+  --slow \
+  -vvvv
+```
+
+If you see `Error: Chain <id> not supported`, switch back to base `foundry.toml` and use the CLI custom verifier mode above (`--verifier custom --verifier-url ...`).
 
 #### 2. Create a New Market
 
@@ -266,21 +328,23 @@ Creates a market with a binary question. Edit the question in the script file be
 forge script script/2_CreateNewMarket.s.sol \
   --rpc-url $RPC_URL \
   --broadcast \
+  --slow \
   -vvvv
 ```
 
-**Output**: Note the market ID and set it as `MARKET_ID` in your `.env`.
+**Output**: Note the market ID and set it as `MARKET_ID` in your `.env.local`.
 
 **⚠️ Note**: The market has a 3-minute prediction window. Complete the next step quickly!
 
 #### 3. Make a Prediction
 
-Place a bet on the market. Set `OUTCOME` (1=No, 2=Yes) and `AMOUNT` in `.env` first.
+Place a bet on the market. Set `OUTCOME` (1=No, 2=Yes) and `AMOUNT` in `.env.local` first.
 
 ```bash
 forge script script/3_MakePrediction.s.sol \
   --rpc-url $RPC_URL \
   --broadcast \
+  --slow \
   -vvvv
 ```
 
@@ -288,7 +352,7 @@ forge script script/3_MakePrediction.s.sol \
 
 - Your account must have sufficient USDC balance. This script also approves `SimpleMarket` to spend your USDC when making your prediction.
 - Execute within 3 minutes of market creation (Market close is set to 3 minutes by default in `src/SimpleMarket.sol`)
-- Set `OUTCOME` and `AMOUNT` in `.env`
+- Set `OUTCOME` and `AMOUNT` in `.env.local`
 
 #### 4. Request Settlement
 
@@ -298,6 +362,7 @@ Request CRE to settle the market (must be after market close time).
 forge script script/4_RequestSettlement.s.sol \
   --rpc-url $RPC_URL \
   --broadcast \
+  --slow \
   -vvvv
 ```
 
@@ -323,6 +388,7 @@ After the market is settled, winners can claim their rewards.
 forge script script/5_ClaimPrediction.s.sol \
   --rpc-url $RPC_URL \
   --broadcast \
+  --slow \
   -vvvv
 ```
 
@@ -336,10 +402,11 @@ forge script script/5_ClaimPrediction.s.sol \
 If the LLM returns `INCONCLUSIVE`, use this script to manually settle.
 
 ```bash
-# Set OUTCOME in .env first
+# Set OUTCOME in .env.local first
 forge script script/SettleMarketManually.s.sol \
   --rpc-url $RPC_URL \
   --broadcast \
+  --slow \
   -vvvv
 ```
 

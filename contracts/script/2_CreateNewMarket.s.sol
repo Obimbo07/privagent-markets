@@ -11,7 +11,7 @@ contract NewMarket is Script {
         address marketAddr = vm.envAddress("MARKET");
         uint256 pk = vm.envUint("PRIVATE_KEY"); // caller EOA
 
-        string memory question = "Will Sweden win the 2025 Eurovision contest?"; // "The New York Yankees will win the 2009 world series.";
+        string memory question = "Will it rain more than 50mm in Nairobi next week?"; // "The New York Yankees will win the 2009 world series.";
 
         SimpleMarket market = SimpleMarket(marketAddr);
 

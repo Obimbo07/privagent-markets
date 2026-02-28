@@ -1,0 +1,16 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+remappings = [
+    "@openzeppelin/=lib/openzeppelin-contracts/"
+]
+
+[rpc_endpoints]
+sepolia = "${RPC_URL}"
+tenderly = "${TENDERLY_VIRTUAL_TESTNET_RPC_URL}"
+
+# Tenderly-only verification config for custom virtual testnet chains.
+# Use this config file only when running verification flows.
+[etherscan]
+unknown_chain = { key = "${TENDERLY_ACCESS_KEY}", chain = "${TENDERLY_CHAIN_ID}", url = "${TENDERLY_VERIFIER_URL}" }
